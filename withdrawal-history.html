@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Withdrawal History</title>
+    <style>
+        body {
+            background-color: #f0f0f0; /* light gray background */
+        }
+        .container {
+            position: absolute; /* position container absolutely */
+            top: 0; /* position container at top of screen */
+            left: 0; /* position container at left of screen */
+            width: 100%; /* set container width to 100% of screen */
+            height: 100%; /* set container height to 100% of screen */
+            background-color: #ffffff; /* white background */
+            border: 1px solid #dddddd; /* light gray border */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* add box shadow */
+            overflow-y: auto; /* add vertical scrollbar if necessary */
+            padding: 20px; /* add padding */
+        }
+        table {
+            width: 50%;
+            border-collapse: fixed;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        .pending {
+            color: #d75400;
+        }
+        .successful {
+            color: green;
+        }
+        .declined {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3>WITHDRAWAL HISTORY</h3>
+        <table>
+            <tr>
+                <th>Transaction Number</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+            <script>
+                const withdrawalHistory = JSON.parse(localStorage.getItem('withdrawalHistory'));
+                if (withdrawalHistory) {
+                    // Sort transactions by date in descending order
+                    withdrawalHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    withdrawalHistory.forEach((receipt) => {
+                        let statusClass;
+                        switch (receipt.status) {
+                            case 'Pending':
+                                statusClass = 'pending';
+                                break;
+                            case 'Successful':
+                                statusClass = 'successful';
+                                break;
+                            case 'Declined':
+                                statusClass = 'declined';
+                                break;
+                        }
+                        document.write(`
+                            <tr>
+                                <td>${receipt.transactionNumber}</td>
+                                <td> 🪙${receipt.amount}</td>
+                                <td>${receipt.date}</td>
+                                <td class="${statusClass}">${receipt.status}</td>
+                            </tr>
+                        `);
+                    });
+                }
+            </script>
+        </table>
+    </div>
+</body>
+</html>

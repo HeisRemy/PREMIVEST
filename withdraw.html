@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Withdrawal Page</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+}
+form {
+width: 80%;
+margin: 40px auto;
+padding: 20px;
+border: 1px solid #ccc;
+border-radius: 10px;
+box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+label {
+display: block;
+margin-bottom: 10px;
+}
+input[type="text"], input[type="number"] {
+width: 90%;
+height: 20px;
+margin-bottom: 20px;
+padding: 10px;
+border: 1px solid #ccc;
+}
+button {
+width: 100%;
+height: 40px;
+background-color: #007;
+color: #fff;
+padding: 10px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
+</style>
+</head>
+<body>
+<h3>MAKE WITHDRAWAL REQUEST</h3>
+<p style="font-weight:bold;">Note: Minimum withdrawal limit is 🪙50,000. 10 Premicoin is equivalent to 1 Naira.</p>
+
+<h4 style="color: #007; font-weight: bold;">Enter The Correct Withdrawal Details, Incorrect Withdrawal Details Will result To Permanent Loss Of Funds!</h4>
+<form id="withdraw-form">
+<label for="account-name">Account Name:</label>
+<input type="text" id="account-name" name="account-name" placeholder="Account Name"/>
+<label for="account-number">Account Number:</label>
+<input type="number" id="account-number" name="account-number" placeholder="Account Number"/>
+<label for="bank-name">Bank Name:</label>
+<input type="text" id="bank-name" name="bank-name" placeholder="Bank Name"/>
+<label for="amount-to-withdraw">Amount to Withdraw (🪙):</label>
+<input type="number" id="amount-to-withdraw" name="amount-to-withdraw" placeholder="Amount to Withdraw" min="5000"/>
+<button id="withdraw-button">REQUEST WITHDRAWAL</button>
+</form>
+<button id="view-withdrawal-history-button">View Past Withdrawals</button>
+<script>
+const userData = JSON.parse(localStorage.getItem('userData'));
+const userBalance = userData.balance;
+console.log('User Data:', userData);
+console.log('User Balance:', userBalance);
+
+const withdrawForm = document.getElementById('withdraw-form');
+    const withdrawButton = document.getElementById('withdraw-button');
+    const viewWithdrawalHistoryButton = document.getElementById('view-withdrawal-history-button');
+
+    withdrawButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        const accountName = document.getElementById('account-name').value;
+        const accountNumber = document.getElementById('account-number').value;
+        const bankName = document.getElementById('bank-name').value;
+        const amountToWithdraw = parseFloat(document.getElementById('amount-to-withdraw').value);
+        console.log('Account Name:', accountName);
+        console.log('Account Number:', accountNumber);
+        console.log('Bank Name:', bankName);
+        console.log('Amount to Withdraw:', amountToWithdraw);
+
+        if (accountName === '' || accountNumber === '' || bankName === '' || amountToWithdraw === 0 || isNaN(amountToWithdraw)) {
+            alert('Please fill in all the fields with valid data.');
+        } else if (amountToWithdraw < 50000) {
+            alert('Minimum withdrawal limit is 🪙50,000 Premicoin!.');
+        } else if (userBalance < amountToWithdraw) {
+            alert('Insufficient balance! You do not have enough balance to make this withdrawal.');
+        } else {
+            const transactionNumber = generateTransactionNumber();
+            console.log('Transaction Number:', transactionNumber);
+            const withdrawalHistory = JSON.parse(localStorage.getItem('withdrawalHistory')) || [];
+            withdrawalHistory.push({
+                transactionNumber,
+                amount: amountToWithdraw,
+                date: new Date().toLocaleString()
+            });
+            localStorage.setItem('withdrawalHistory', JSON.stringify(withdrawalHistory));
+            localStorage.setItem('amountToWithdraw', amountToWithdraw);
+            window.location.href = 'deposit.html';
+        }
+    });
+
+    viewWithdrawalHistoryButton.addEventListener('click', () => {
+        window.location.href = 'withdrawal-history.html';
+    });
+
+    function generateTransactionNumber() {
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const randomAlphabet = alphabet.substring(Math.floor(Math.random() * alphabet.length), Math.floor(Math.random() * alphabet.length) + 3);
+        const randomNumber = Math.floor(Math.random() * 10000000000);
+        return randomAlphabet + randomNumber.toString();
+    }
+</script>
+<script src="login.js"></script>
+</body>
+</html>

