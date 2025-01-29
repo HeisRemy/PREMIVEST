@@ -26,7 +26,7 @@ userData = JSON.parse(localStorage.getItem('userData'));
 } else {
 // If no user data is found, initialize with default values
 userData = {
-balance: 0,
+balance: 100,
 transactionHistory: [],
 lastClaimTime: null,
 lastSignInTime: null
@@ -117,7 +117,7 @@ alert("Can't claim now, please wait for 24hrs to claim again!");
 // Add an event listener to the tap button
 tapButton.addEventListener('click', (event) => {
 // Tap to earn reward
-userData.balance += 10;
+userData.balance += 50;
 // Update the balance element
 balanceElement.textContent = `PREMICOIN:🪙 ${userData.balance} | ₦${(userData.balance * 0.10).toFixed(2)}`;
 // Store the user data in local storage
