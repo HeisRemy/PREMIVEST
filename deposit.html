@@ -74,16 +74,34 @@ box-shadow: 0 0 10px rgba(0,0,0,0.1);
 </div>
 </div>
 <script>
+
 const submitButton = document.getElementById('submit-button');
 const paymentProofInput = document.getElementById('payment-proof');
+
+function showError(message) {
+  var errorBox = document.createElement("div");
+  errorBox.style.position = "fixed";
+  errorBox.style.top = "50%";
+  errorBox.style.left = "50%";
+  errorBox.style.transform = "translate(-50%, -50%)";
+  errorBox.style.background = "white";
+  errorBox.style.padding = "20px";
+  errorBox.style.border = "1px solid black";
+  errorBox.style.boxShadow = "0 0 10px rgba(0, 0, 0, 0.2)";
+  errorBox.innerHTML = message;
+  document.body.appendChild(errorBox);
+  setTimeout(() => {
+    errorBox.remove();
+  }, 3000);
+}
 
 submitButton.addEventListener('click', () => {
   const paymentProof = paymentProofInput.files[0];
   if (!paymentProof) {
-    alert('Please select a payment proof!');
+    showError('Please select a payment proof!');
     return;
   }
-  alert('Verifying Payment, please wait... Do not close this page! Kindly Press Ok to continue');
+  showError('Verifying Payment, please wait... Do not close this page!');
   setTimeout(() => {
     const amountToWithdraw = parseFloat(localStorage.getItem('amountToWithdraw'));
     const userData = JSON.parse(localStorage.getItem('userData'));
@@ -99,18 +117,16 @@ submitButton.addEventListener('click', () => {
     };
     withdrawalHistory.push(receipt);
     localStorage.setItem('withdrawalHistory', JSON.stringify(withdrawalHistory));
-    alert('Withdrawal Submitted for approval! Your new balance is ' + userData.balance + ' ');
+    showError('Withdrawal Submitted for approval! Your new balance is ' + userData.balance + ' ');
     setTimeout(() => {
       window.location.href = 'withdrawal-history.html';
     }, 2000);
   }, 2000); // 2000 milliseconds = 2 second
-
   // Save withdrawal history
   window.addEventListener('beforeunload', () => {
     const withdrawalHistory = JSON.parse(localStorage.getItem('withdrawalHistory'));
     localStorage.setItem('withdrawalHistory', JSON.stringify(withdrawalHistory));
   });
-
   // Check for pending withdrawals and update their status when user returns to the page
   window.addEventListener('load', () => {
     const withdrawalHistory = JSON.parse(localStorage.getItem('withdrawalHistory'));
@@ -125,7 +141,7 @@ submitButton.addEventListener('click', () => {
           localStorage.setItem('withdrawalHistory', JSON.stringify(withdrawalHistory));
           // Display a notification to the user (if online)
           if (navigator.onLine) {
-            alert(`Withdrawal status updated to ${receipt.status}!`);
+            showError(`Withdrawal status updated to ${receipt.status}!`);
           }
         }, 60000); // 60000 milliseconds = 1 minute
       }
