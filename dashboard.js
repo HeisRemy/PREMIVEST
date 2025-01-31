@@ -1,4 +1,3 @@
-
 // Get the navigation menu items
 const navItems = document.querySelectorAll('nav ul li a');
 
@@ -26,7 +25,7 @@ userData = JSON.parse(localStorage.getItem('userData'));
 } else {
 // If no user data is found, initialize with default values
 userData = {
-balance: 100,
+balance: 0,
 transactionHistory: [],
 lastClaimTime: null,
 lastSignInTime: null
@@ -70,6 +69,25 @@ window.location.href = 'withdraw.html';
 });
 });
 
+// Function to show custom popup message
+function showError(message) {
+const errorBox = document.createElement('div');
+errorBox.style.position = 'fixed';
+errorBox.style.top = '50%';
+errorBox.style.left = '50%';
+errorBox.style.transform = 'translate(-50%, -50%)';
+errorBox.style.background = 'white';
+errorBox.style.padding = '20px';
+errorBox.style.border = '1px solid black';
+errorBox.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
+errorBox.innerHTML = message;
+document.body.appendChild(errorBox);
+setTimeout(() => {
+errorBox.remove();
+}, 3000);
+}
+
+
 // Add an event listener to the claim button
 claimButton.addEventListener('click', () => {
 // Get the current time
@@ -88,7 +106,7 @@ userData.lastClaimTime = currentTime;
 // Store the user data in local storage
 localStorage.setItem('userData', JSON.stringify(userData));
 } else {
-alert('You have already claimed an hourly reward, wait till next hour!');
+showError('You have already claimed an hourly reward, wait till next hour!');
 }
 });
 
@@ -110,14 +128,14 @@ userData.lastSignInTime = currentTime;
 // Store the user data in local storage
 localStorage.setItem('userData', JSON.stringify(userData));
 } else {
-alert("Can't claim now, please wait for 24hrs to claim again!");
+showError("Can't claim now, please wait for 24hrs to claim again!");
 }
 });
 
 // Add an event listener to the tap button
 tapButton.addEventListener('click', (event) => {
 // Tap to earn reward
-userData.balance += 50;
+userData.balance += 10;
 // Update the balance element
 balanceElement.textContent = `PREMICOIN:🪙 ${userData.balance} | ₦${(userData.balance * 0.10).toFixed(2)}`;
 // Store the user data in local storage
