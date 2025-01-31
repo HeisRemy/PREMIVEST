@@ -73,7 +73,7 @@ window.location.href = 'withdraw.html';
 function showError(message) {
 const errorBox = document.createElement('div');
 errorBox.style.position = 'fixed';
-errorBox.style.top = '50%';
+errorBox.style.top = '30%';
 errorBox.style.left = '50%';
 errorBox.style.transform = 'translate(-50%, -50%)';
 errorBox.style.background = 'white';
@@ -131,15 +131,66 @@ localStorage.setItem('userData', JSON.stringify(userData));
 showError("Can't claim now, please wait for 24hrs to claim again!");
 }
 });
+let animationQueue = [];
 
-// Add an event listener to the tap button
 tapButton.addEventListener('click', (event) => {
-// Tap to earn reward
-userData.balance += 10;
-// Update the balance element
-balanceElement.textContent = `PREMICOIN:🪙 ${userData.balance} | ₦${(userData.balance * 0.10).toFixed(2)}`;
-// Store the user data in local storage
-localStorage.setItem('userData', JSON.stringify(userData));
-// Prevent default click behavior
-event.preventDefault();
+  // Tap to earn reward
+  userData.balance += 50;
+  
+  // Update the balance element
+  balanceElement.textContent = `PREMICOIN: 🪙${userData.balance} | ₦${(userData.balance * 0.10).toFixed(2)}`;
+  
+  // Store the user data in local storage
+  localStorage.setItem('userData', JSON.stringify(userData));
+  
+  // Add animation to the queue
+  animationQueue.push('+50');
+  
+  // Process the animation queue
+  processAnimationQueue();
+  
+  // Prevent default click behavior
+  event.preventDefault();
 });
+
+function processAnimationQueue() {
+  if (animationQueue.length > 0) {
+    const animationContainer = document.getElementById('animation-container');
+    animationContainer.textContent = animationQueue.shift();
+    animationContainer.style.position = 'absolute';
+    animationContainer.style.top = '35%';
+    animationContainer.style.left = '50%';
+    animationContainer.style.transform = 'translate(-50%, -50%)';
+    animationContainer.style.fontSize = '24px';
+    animationContainer.style.fontWeight = 'bold';
+    animationContainer.style.color = '#ffffff';
+    animationContainer.style.display = 'block';
+    animationContainer.style.animation = 'animate-text 0.5s';
+    
+    setTimeout(() => {
+      animationContainer.style.display = 'none';
+      animationContainer.style.animation = '';
+      processAnimationQueue(); // Process the next animation in the queue
+    }, 500);
+  }
+}
+
+// Add animation keyframes
+const style = document.createElement('style');
+style.innerHTML = `
+  @keyframes animate-text {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.2);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+`;
+document.head.appendChild(style);
