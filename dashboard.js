@@ -135,7 +135,7 @@ let animationQueue = [];
 
 tapButton.addEventListener('click', (event) => {
   // Tap to earn reward
-  userData.balance += 50;
+  userData.balance += 5;
   
   // Update the balance element
   balanceElement.textContent = `PREMICOIN: 🪙${userData.balance} | ₦${(userData.balance * 0.10).toFixed(2)}`;
@@ -144,7 +144,7 @@ tapButton.addEventListener('click', (event) => {
   localStorage.setItem('userData', JSON.stringify(userData));
   
   // Add animation to the queue
-  animationQueue.push('+50');
+  animationQueue.push('+5');
   
   // Process the animation queue
   processAnimationQueue();
@@ -158,7 +158,7 @@ function processAnimationQueue() {
     const animationContainer = document.getElementById('animation-container');
     animationContainer.textContent = animationQueue.shift();
     animationContainer.style.position = 'absolute';
-    animationContainer.style.top = '35%';
+    animationContainer.style.top = '50%';
     animationContainer.style.left = '50%';
     animationContainer.style.transform = 'translate(-50%, -50%)';
     animationContainer.style.fontSize = '24px';
